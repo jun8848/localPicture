@@ -14,7 +14,7 @@ object Config : AutoSavePluginConfig("config") {
     var picturePath: String by value()
 
     @ValueDescription("关键词")
-    var keyWord: String by value("本地")
+    var keyWord by value("本地")
 
     @ValueDescription("图片分类")
     var picClass: MutableList<String> by value()
@@ -23,7 +23,7 @@ object Config : AutoSavePluginConfig("config") {
     var picClassify: MutableMap<String, MutableList<String>> by value()
 
     @ValueDescription("图片最大数量")
-    var picMaxNum: Int by value(20)
+    var picMaxNum by value(20)
 
     // 初始化图库
     fun initGallery(): Int {
