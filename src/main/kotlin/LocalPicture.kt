@@ -2,6 +2,7 @@ package github.jun8848
 
 import github.jun8848.config.Config
 import github.jun8848.util.FileUtil
+import github.jun8848.util.GlobalMethod.getRandomPic
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.contact.isOperator
@@ -10,9 +11,7 @@ import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.buildForwardMessage
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
-import net.mamoe.mirai.utils.info
 import java.io.File
-import kotlin.random.Random
 
 object LocalPicture : KotlinPlugin(
     JvmPluginDescription(
@@ -23,44 +22,8 @@ object LocalPicture : KotlinPlugin(
         author("mubai")
     }
 ) {
-    private fun getRandomPic(num: Int, path: String = "null"): MutableList<String> {
-        // 返回的列表
-        val returnList = mutableListOf<String>()
-        // 图片分类列表
-        val picPathList = Config.picClass
-        // 图片列表
-        val picList = Config.picClassify
-
-        // 判断是否指定路径
-        if (path == "null") {
-            // 根据传入的值获取指定数量的图片
-            for (i in 0 until num) {
-                // 随机获取一个分类
-                val picPathIndex = Random.nextInt(picPathList.count())
-                // 随机获取该分类中的一张图片
-                val picIndex = Random.nextInt(picList[picPathList[picPathIndex]]!!.count())
-                // 将该图片的路径拼接  并加入返回列表中
-                returnList.add(Config.picturePath + "\\" + picPathList[picPathIndex] + "\\" + picList[picPathList[picPathIndex]]!![picIndex])
-            }
-            return returnList
-        } else {
-            // 指定路径
-            if (picList.keys.indexOf(path) != -1) {
-                for (i in 0 until num) {
-                    val picIndex = Random.nextInt(picList[path]!!.count())
-                    returnList.add(Config.picturePath + "\\" + path + "\\" + picList[path]!![picIndex])
-                }
-                return returnList
-            }
-            return returnList
-        }
-    }
-
-
     override fun onEnable() {
-        logger.info { "Plugin loaded" }
         Config.reload()
-
         val eventChannel = globalEventChannel().parentScope(this)
         eventChannel.subscribeAlways<GroupMessageEvent> {
             val msg = message.contentToString()
@@ -72,7 +35,7 @@ object LocalPicture : KotlinPlugin(
                 return@subscribeAlways
             }
             when {
-                msg.startsWith("本地") -> {
+                msg.startsWith(Config.keyWord) -> {
                     val m = msg.removePrefix("本地").trim()
                     val regex = "\\d+$".toRegex()
                     val matchResult = regex.find(m)
@@ -81,7 +44,7 @@ object LocalPicture : KotlinPlugin(
                         val index = matchResult.range.first
                         val head = m.substring(0, index).trim()
                         val tail = m.substring(index)
-                        val picNum = if (tail.toInt()>=20) 20 else tail.toInt()
+                        val picNum = if (tail.toInt() >= 20) 20 else tail.toInt()
                         if (head == "setu")
                             getRandomPic(picNum)
                         else
@@ -116,9 +79,9 @@ object LocalPicture : KotlinPlugin(
                 }
 
                 msg.startsWith("设置触发关键词") -> {
-                    val trigger = msg.removePrefix("设置触发关键词").trim()
-                    Config.trigger = trigger
-                    subject.sendMessage("设置触发关键字为:${trigger}成功")
+                    val word = msg.removePrefix("设置触发关键词").trim()
+                    Config.keyWord = word
+                    subject.sendMessage("设置触发关键字为:${word}成功")
                 }
 
                 msg.startsWith("刷新本地setu") && sender.permission.isOperator() -> {

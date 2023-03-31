@@ -13,7 +13,7 @@ object Config:AutoSavePluginConfig ("config"){
     var picturePath:String by value()
 
     @ValueDescription("关键词")
-    var trigger : String by value("本地setu")
+    var keyWord : String by value("本地")
 
     @ValueDescription("图片分类")
     var picClass:MutableList<String> by value()
