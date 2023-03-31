@@ -4,6 +4,7 @@ import github.jun8848.config.Config
 import kotlin.random.Random
 
 object GlobalMethod {
+    // 获取本地随机图片
     fun getRandomPic(num: Int, path: String = "null"): MutableList<String> {
         // 返回的列表
         val returnList = mutableListOf<String>()
